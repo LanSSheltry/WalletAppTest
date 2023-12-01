@@ -10,10 +10,10 @@ namespace WalletAppTestTask.Models
         [Column("id")]
         public long Id { get; set; }
 
-        [ForeignKey("User")]
-        [Column("uid")]
+        [ForeignKey("BankCard")]
+        [Column("id_bank_card")]
         [Required]
-        public long UserId { get; set; }
+        public long BankCardId { get; set; }
 
         [Column("payment_type")]
         [Required]
@@ -24,27 +24,42 @@ namespace WalletAppTestTask.Models
         [Range(0, 1500)]
         public decimal Sum { get; set; }
 
+        [Column("status")]
+        [Required]
+        public PaymentStatuses Status { get; set; }
+
         [Column("transaction_name")]
         [Required]
         public string Name { get; set; }
 
         [Column("description")]
         [Required]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
-        [Column("authorized_uid")]
-        public long? AuthorizedUserId { get; set; }
+        [Column("authorized_user_name")]
+        public string? AuthorizedUser { get; set; }
 
-        [Column("icon_path")]
+        [Column("completed_at")]
         [Required]
-        public string IconPath { get; set; }
+        public DateTime CreatedAt { get; set; }
 
-        public User User { get; set; }
+        [Column("icon")]
+        [Required]
+        public string? Icon { get; set; } //For this version this is just a field without information
+
+        public BankCard Card { get; set; }
+
     }
 
     public enum PaymentTypes
     {
         Payment = 0,
         Credit = 1
+    }
+
+    public enum PaymentStatuses
+    {
+        Approved = 0,
+        Declined = 1
     }
 }

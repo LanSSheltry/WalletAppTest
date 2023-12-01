@@ -14,17 +14,18 @@ builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
 builder.Services.AddDbContext<WalletAppDbContext>(options =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    var connectionString = builder.Configuration.GetConnectionString("PostgreSQL");
     options.UseNpgsql(connectionString);
 });
 
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "WalletAppAPI", Version = "v1" });
 });
 
 builder.Services.AddScoped<WalletAppDbContext>();
-builder.Services.AddScoped<TestService>();
+builder.Services.AddScoped<UsersService>();
+builder.Services.AddScoped<TransactionsService>();
 
 
 var app = builder.Build();
@@ -34,7 +35,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API V1");
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "WalletAppAPI");
         c.RoutePrefix = "swagger";
     });
 }

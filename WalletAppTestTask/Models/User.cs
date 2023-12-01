@@ -10,10 +10,6 @@ namespace WalletAppTestTask.Models
         [Column("id")]
         public long Id { get; set; }
 
-        [Column("name")]
-        [Required]
-        public string Name { get; set; }
-
         [Column("balance")]
         [Required]
         public decimal Balance { get; set; }
@@ -26,7 +22,7 @@ namespace WalletAppTestTask.Models
         [Required]
         public DateTime CreatedAt { get; set; }
 
-        public List<Transaction> Transactions { get; set; }
+        public List<BankCard> BankCards { get; set; }
     }
 
     public enum DueStatuses
