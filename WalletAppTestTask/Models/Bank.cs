@@ -8,7 +8,7 @@ namespace WalletAppTestTask.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("id")]
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         [Column("title")]
         [Required]
