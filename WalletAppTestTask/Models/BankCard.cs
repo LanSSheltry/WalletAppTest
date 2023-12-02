@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics.Eventing.Reader;
 
 namespace WalletAppTestTask.Models
 {
+    [Table("BankCards")]
     public class BankCard
     {
         [Key]
@@ -12,7 +12,7 @@ namespace WalletAppTestTask.Models
         public long Id { get; set; }
 
         [ForeignKey("User")]
-        [Column("uid")]
+        [Column("id_user")]
         [Required]
         public long UserId { get; set; }
 
@@ -20,13 +20,17 @@ namespace WalletAppTestTask.Models
         [Column("id_bank")]
         public long BankId { get; set; }
 
+        [Column("balance")]
+        [Required]
+        public decimal Balance { get; set; }
+
         [Column("name")]
         [Required]
         public string Name { get; set; }
 
         [Column("type")]
         [Required]
-        public CardTypes Type { get; set; }
+        public CardType Type { get; set; }
 
         public User User { get; set; }
 
@@ -35,7 +39,7 @@ namespace WalletAppTestTask.Models
         public List<Transaction> Transactions { get; set; }
     }
 
-    public enum CardTypes
+    public enum CardType
     {
         Debit = 0    
     }

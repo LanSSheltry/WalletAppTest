@@ -1,5 +1,4 @@
-﻿
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using WalletAppTestTask.Models;
 
 namespace WalletAppTestTask.DbContext
@@ -8,12 +7,16 @@ namespace WalletAppTestTask.DbContext
     {
         public WalletAppDbContext(DbContextOptions<WalletAppDbContext> options) : base(options)
         {
-
+            ChangeTracker.LazyLoadingEnabled = false;
         }
 
         public DbSet<User> Users { get; set; }
 
         public DbSet<Transaction> Transactions { get; set; }
+
+        public DbSet<BankCard> BankCards { get; set; }
+
+        public DbSet<Bank> Banks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -21,7 +24,7 @@ namespace WalletAppTestTask.DbContext
                 .HasMany(u => u.BankCards)
                 .WithOne(bc => bc.User)
                 .HasForeignKey(bc => bc.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Bank>()
                 .HasMany(b => b.Cards)
@@ -33,7 +36,7 @@ namespace WalletAppTestTask.DbContext
                 .HasMany(bc => bc.Transactions)
                 .WithOne(t => t.Card)
                 .HasForeignKey(t => t.BankCardId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

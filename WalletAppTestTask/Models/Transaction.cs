@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WalletAppTestTask.Models
 {
+    [Table("Transactions")]
     public class Transaction
     {
         [Key]
@@ -17,7 +18,7 @@ namespace WalletAppTestTask.Models
 
         [Column("payment_type")]
         [Required]
-        public PaymentTypes Type { get; set; }
+        public PaymentType Type { get; set; }
 
         [Column("sum")]
         [Required]
@@ -26,7 +27,7 @@ namespace WalletAppTestTask.Models
 
         [Column("status")]
         [Required]
-        public PaymentStatuses Status { get; set; }
+        public PaymentStatus Status { get; set; }
 
         [Column("transaction_name")]
         [Required]
@@ -51,13 +52,13 @@ namespace WalletAppTestTask.Models
 
     }
 
-    public enum PaymentTypes
+    public enum PaymentType
     {
         Payment = 0,
         Credit = 1
     }
 
-    public enum PaymentStatuses
+    public enum PaymentStatus
     {
         Approved = 0,
         Declined = 1

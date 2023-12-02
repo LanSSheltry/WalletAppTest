@@ -15,12 +15,15 @@ namespace WalletAppTestTask.Services
 
         public async Task<string> GetUserByIdAsync(long id)
         {
-            var user = await _dbContext.Users.Where(p => p.Id == id)
+            var user = await _dbContext.Users
+                       .Where(p => p.Id == id)
                        .FirstOrDefaultAsync();
 
             var userJson = JsonConvert.SerializeObject(user);
 
             return userJson;
         }
+
+        
     }
 }

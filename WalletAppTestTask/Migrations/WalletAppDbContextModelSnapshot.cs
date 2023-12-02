@@ -38,7 +38,7 @@ namespace WalletAppTestTask.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Bank");
+                    b.ToTable("Banks");
                 });
 
             modelBuilder.Entity("WalletAppTestTask.Models.BankCard", b =>
@@ -49,6 +49,10 @@ namespace WalletAppTestTask.Migrations
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<decimal>("Balance")
+                        .HasColumnType("numeric")
+                        .HasColumnName("balance");
 
                     b.Property<long>("BankId")
                         .HasColumnType("bigint")
@@ -65,7 +69,7 @@ namespace WalletAppTestTask.Migrations
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint")
-                        .HasColumnName("uid");
+                        .HasColumnName("id_user");
 
                     b.HasKey("Id");
 
@@ -73,7 +77,7 @@ namespace WalletAppTestTask.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("BankCard");
+                    b.ToTable("BankCards");
                 });
 
             modelBuilder.Entity("WalletAppTestTask.Models.Transaction", b =>
@@ -140,10 +144,6 @@ namespace WalletAppTestTask.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<decimal>("Balance")
-                        .HasColumnType("numeric")
-                        .HasColumnName("balance");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
@@ -168,7 +168,7 @@ namespace WalletAppTestTask.Migrations
                     b.HasOne("WalletAppTestTask.Models.User", "User")
                         .WithMany("BankCards")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Bank");
@@ -181,7 +181,7 @@ namespace WalletAppTestTask.Migrations
                     b.HasOne("WalletAppTestTask.Models.BankCard", "Card")
                         .WithMany("Transactions")
                         .HasForeignKey("BankCardId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Card");

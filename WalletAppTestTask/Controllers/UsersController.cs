@@ -6,33 +6,23 @@ namespace WalletAppTestTask.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [SwaggerTag("User Operations")]
     public class UsersController : Controller
     { 
-        private readonly UsersService _testService;
+        private readonly UsersService _usersService;
 
-        public UsersController(UsersService testService)
+        public UsersController(
+            UsersService usersService)
         {
-            _testService = testService;
+            _usersService = usersService;
         }
 
         [HttpGet("getuser/{id}", Name = "GetUser")]
-        public IActionResult GetUser(long id)
+        public async Task<IActionResult> GetUser(long id)
         {
-            var result = _testService.GetUserByIdAsync(id);
+            var result = await _usersService.GetUserByIdAsync(id);
 
             return Ok(result);
         }
-
-        [HttpGet("getusertransactions/{userId}")]
-        public IActionResult getUserTransactions(long iserId)
-        {
-
-
-            return Ok();
-        }
-
-
 
     }
 }

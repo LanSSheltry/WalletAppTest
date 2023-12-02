@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WalletAppTestTask.Models
 {
+    [Table("Banks")]
     public class Bank
     {
         [Key]

@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WalletAppTestTask.Models
 {
+    [Table("Users")]
     public class User
     {
         [Key]
@@ -10,13 +11,9 @@ namespace WalletAppTestTask.Models
         [Column("id")]
         public long Id { get; set; }
 
-        [Column("balance")]
-        [Required]
-        public decimal Balance { get; set; }
-
         [Column("due_status")]
         [Required]
-        public DueStatuses DueStatus { get; set; }
+        public DueStatus DueStatus { get; set; }
 
         [Column("created_at")]
         [Required]
@@ -25,7 +22,7 @@ namespace WalletAppTestTask.Models
         public List<BankCard> BankCards { get; set; }
     }
 
-    public enum DueStatuses
+    public enum DueStatus
     {
         NoPaymentDue = 0,
         PaymentDue = 1
