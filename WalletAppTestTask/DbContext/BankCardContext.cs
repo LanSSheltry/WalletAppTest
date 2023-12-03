@@ -38,6 +38,10 @@ namespace WalletAppTestTask.DbContext
         [Required]
         public CardType Type { get; set; }
 
+        [Column("currency")]
+        [Required]
+        public Currency Currency { get; set; }
+
         public AccountContext Account { get; set; }
 
         public BankContext Bank { get; set; }
@@ -55,6 +59,7 @@ namespace WalletAppTestTask.DbContext
                 DueStatus = this.DueStatus,
                 Name = Name,
                 Type = this.Type,
+                Currency = this.Currency,
                 Transactions = Transactions.Select(tr => tr.ToDto()).ToList() //To convert all transactions into dto
             };
         }
@@ -63,6 +68,14 @@ namespace WalletAppTestTask.DbContext
     public enum CardType
     {
         Debit = 0
+    }
+
+    public enum Currency
+    {
+        UAH = 0,
+        EUR = 1,
+        USD = 2,
+        CAD = 3
     }
 
     public enum DueStatus

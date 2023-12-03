@@ -27,6 +27,10 @@ namespace WalletAppTestTask.DbContext
         [Range(0, 1500)]
         public decimal Total { get; set; }
 
+        [Column("currency")]
+        [Required]
+        public Currency Currency { get; set; }
+
         [Column("status")]
         [Required]
         public PaymentStatus Status { get; set; }
@@ -60,6 +64,7 @@ namespace WalletAppTestTask.DbContext
                 BankCardId = this.BankCardId,
                 Type = this.Type,
                 Total = this.Total,
+                Currency = this.Currency,
                 Status = this.Status,
                 Name = this.Name,
                 Description = this.Description,

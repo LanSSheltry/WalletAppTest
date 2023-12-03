@@ -62,16 +62,23 @@ namespace WalletAppTestTask.DbContext
             return bankCard;
         }
 
-        public async Task<string> GetBankNameForCardsById(long bankId)
+        public async Task<string> GetBankNameForCardsByIdAsync(long bankId)
         {
             var bankName = (await Banks.Where(b=>b.Id == bankId).FirstOrDefaultAsync()).Title;
 
             return bankName;
         }
 
-        public async Task<List<TransactionContext>> GetTransactionsByCardId(long id)
+        public async Task<List<TransactionContext>> GetTransactionsByCardIdLimitedAsync(long id)
         {
             var transactions = await Transactions.Where(tr => tr.BankCardId == id).Take(10).ToListAsync();
+
+            return transactions;
+        }
+
+        public async Task<List<TransactionContext>> GetTransactionsByCardIdUnlimitedAsync(long id)
+        {
+            var transactions = await Transactions.Where(tr => tr.BankCardId == id).ToListAsync();
 
             return transactions;
         }

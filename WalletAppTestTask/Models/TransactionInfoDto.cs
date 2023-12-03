@@ -2,10 +2,11 @@
 using System.ComponentModel.DataAnnotations;
 using WalletAppTestTask.DbContext;
 using static WalletAppTestTask.DbContext.TransactionContext;
+using WalletAppTestTask.Interfaces;
 
 namespace WalletAppTestTask.Models
 {
-    public class TransactionInfoDto
+    public class TransactionInfoDto : IHasId
     {
         public long Id { get; set; }
 
@@ -14,6 +15,8 @@ namespace WalletAppTestTask.Models
         public PaymentType Type { get; set; }
 
         public decimal Total { get; set; }
+
+        public Currency Currency { get; set; }
 
         public PaymentStatus Status { get; set; }
 
@@ -26,5 +29,10 @@ namespace WalletAppTestTask.Models
         public DateTime CreatedAt { get; set; }
 
         public string? Icon { get; set; } //For this version this is just a field without information
+
+        public long GetId()
+        {
+            return Id;
+        }
     }
 }

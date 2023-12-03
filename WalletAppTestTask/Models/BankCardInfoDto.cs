@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using WalletAppTestTask.DbContext;
+using WalletAppTestTask.Interfaces;
 
 namespace WalletAppTestTask.Models
 {
-    public class BankCardInfoDto
+    public class BankCardInfoDto : IHasId
     {
         public decimal CardLimit { get; } = 1500;
 
@@ -24,6 +25,13 @@ namespace WalletAppTestTask.Models
 
         public CardType Type { get; set; }
 
+        public Currency Currency { get; set; }
+
         public List<TransactionInfoDto> Transactions { get; set; }
+
+        public long GetId()
+        {
+            return Id;
+        }
     }
 }

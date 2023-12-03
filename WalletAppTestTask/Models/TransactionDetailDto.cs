@@ -8,6 +8,8 @@ namespace WalletAppTestTask.Models
 
         public decimal Total { get; set; }
 
+        public string Currency { get; set; }
+
         public PaymentStatus PaymentStatus { get; set; }
 
         public DateTime TransactionDatetime { get; set; }

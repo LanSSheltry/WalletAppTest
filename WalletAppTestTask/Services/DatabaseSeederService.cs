@@ -154,6 +154,7 @@ namespace WalletAppTestTask.Services
                     BankId = (await _dbContext.Banks
                         .Where(t => t.Title == _bankNames[rndIdx])
                         .FirstOrDefaultAsync()).Id,
+                    Currency = (Currency)_random.Next((int)Currency.UAH, (int)Currency.CAD + 1),
                     Balance = 0,
                     Name = GetRandomCardName(),
                     Type = (int)CardType.Debit
@@ -187,7 +188,8 @@ namespace WalletAppTestTask.Services
                     BankCardId = bankCardId,
                     Type = paymentType,
                     Total = CalculateTransactionSum(currentBalance, paymentType),
-                    Status = (int)PaymentStatus.Approved,
+                    Currency = bankCard.Currency,
+                    Status = (PaymentStatus)_random.Next(0, 2),
                     Name = GetRandomCompany(),
                     Description = $"Transaction Description #{i}",
                     AuthorizedUser = _random.Next(0, 2) == 0 ? null : $"SomeName #{bankCardId}",
