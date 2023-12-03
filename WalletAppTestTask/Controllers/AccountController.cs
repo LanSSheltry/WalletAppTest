@@ -66,7 +66,7 @@ namespace WalletAppTestTask.Controllers
 
             var transactionListDto = JsonConvert.SerializeObject(transactionList, Formatting.Indented);
 
-            return Ok(transactionList);
+            return Ok(transactionListDto);
         }
     }
 }
