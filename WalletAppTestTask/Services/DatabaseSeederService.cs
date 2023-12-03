@@ -194,7 +194,7 @@ namespace WalletAppTestTask.Services
                     Description = $"Transaction Description #{i}",
                     AuthorizedUser = _random.Next(0, 2) == 0 ? null : $"SomeName #{bankCardId}",
                     CreatedAt = dayLimit.AddDays(_random.Next(1, (DateTime.UtcNow - dayLimit).Days)),
-                    Icon = "DefaultIcon.jpeg"
+                    Icon = "Static/RandomIcon.png"
                 };
                 _dbContext.Transactions.Add(transaction);
                 _dbContext.SaveChanges();

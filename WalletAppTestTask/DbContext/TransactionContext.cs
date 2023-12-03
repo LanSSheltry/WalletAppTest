@@ -52,7 +52,7 @@ namespace WalletAppTestTask.DbContext
 
         [Column("icon")]
         [Required]
-        public string? Icon { get; set; } //For this version this is just a field without information
+        public string Icon { get; set; } //For this version this is just a field without information
 
         public BankCardContext Card { get; set; }
 

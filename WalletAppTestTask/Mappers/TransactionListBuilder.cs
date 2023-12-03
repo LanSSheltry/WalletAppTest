@@ -1,6 +1,4 @@
-﻿using System.Data.SqlTypes;
-using System.Transactions;
-using WalletAppTestTask.DbContext;
+﻿using WalletAppTestTask.DbContext;
 using WalletAppTestTask.Interfaces;
 using WalletAppTestTask.Models;
 using static WalletAppTestTask.DbContext.TransactionContext;
