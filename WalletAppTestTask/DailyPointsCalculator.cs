@@ -4,6 +4,8 @@
     {
         public static string GetFormattedDailyPoints(DateTime currentDate)
         {
+            //var currentDate1 = DateTime.Parse("2022-05-15");
+
             var seasonStartDate = getDateOfStartSeason(currentDate);
 
             var points = CalculatePoints(seasonStartDate, currentDate);
@@ -26,9 +28,12 @@
             var autumnStart = new DateTime(currentDate.Year, 9, 1);
             var winterStart = new DateTime(currentDate.Year, 12, 1);
 
-            if (currentDate < summerStart && currentDate > springStart) return springStart;
-            else if (currentDate < autumnStart && currentDate > summerStart) return summerStart;
-            else if (currentDate < winterStart && currentDate > autumnStart) return autumnStart;
+            if (currentDate < summerStart && currentDate > springStart) 
+                return springStart;
+            else if (currentDate < autumnStart && currentDate > summerStart) 
+                return summerStart;
+            else if (currentDate < winterStart && currentDate > autumnStart) 
+                return autumnStart;
             else if (currentDate < springStart)
             {
                 return winterStart.AddYears(-1);
