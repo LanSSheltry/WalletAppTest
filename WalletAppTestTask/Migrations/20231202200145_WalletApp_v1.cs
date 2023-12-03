@@ -7,11 +7,25 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace WalletAppTestTask.Migrations
 {
     /// <inheritdoc />
-    public partial class WalletApp_v1_All_except_image : Migration
+    public partial class WalletApp_v1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Accounts",
+                columns: table => new
+                {
+                    id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    due_status = table.Column<int>(type: "integer", nullable: false),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Accounts", x => x.id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Banks",
                 columns: table => new
@@ -26,26 +40,12 @@ namespace WalletAppTestTask.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Users",
-                columns: table => new
-                {
-                    id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    due_status = table.Column<int>(type: "integer", nullable: false),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Users", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "BankCards",
                 columns: table => new
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    id_user = table.Column<long>(type: "bigint", nullable: false),
+                    id_account = table.Column<long>(type: "bigint", nullable: false),
                     id_bank = table.Column<long>(type: "bigint", nullable: false),
                     balance = table.Column<decimal>(type: "numeric", nullable: false),
                     name = table.Column<string>(type: "text", nullable: false),
@@ -55,17 +55,17 @@ namespace WalletAppTestTask.Migrations
                 {
                     table.PrimaryKey("PK_BankCards", x => x.id);
                     table.ForeignKey(
+                        name: "FK_BankCards_Accounts_id_account",
+                        column: x => x.id_account,
+                        principalTable: "Accounts",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_BankCards_Banks_id_bank",
                         column: x => x.id_bank,
                         principalTable: "Banks",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_BankCards_Users_id_user",
-                        column: x => x.id_user,
-                        principalTable: "Users",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -96,14 +96,14 @@ namespace WalletAppTestTask.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_BankCards_id_account",
+                table: "BankCards",
+                column: "id_account");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_BankCards_id_bank",
                 table: "BankCards",
                 column: "id_bank");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_BankCards_id_user",
-                table: "BankCards",
-                column: "id_user");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Transactions_id_bank_card",
@@ -121,10 +121,10 @@ namespace WalletAppTestTask.Migrations
                 name: "BankCards");
 
             migrationBuilder.DropTable(
-                name: "Banks");
+                name: "Accounts");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "Banks");
         }
     }
 }

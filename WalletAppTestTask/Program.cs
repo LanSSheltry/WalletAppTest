@@ -24,9 +24,9 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddScoped<WalletAppDbContext>();
-builder.Services.AddScoped<UsersService>();
+builder.Services.AddScoped<AccountsService>();
 builder.Services.AddScoped<TransactionsService>();
-builder.Services.AddScoped<DatabaseSeeder>();
+builder.Services.AddScoped<DatabaseSeederService>();
 
 
 var app = builder.Build();

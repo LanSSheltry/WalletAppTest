@@ -12,8 +12,8 @@ using WalletAppTestTask.DbContext;
 namespace WalletAppTestTask.Migrations
 {
     [DbContext(typeof(WalletAppDbContext))]
-    [Migration("20231202023135_WalletApp_v1_All_except_image")]
-    partial class WalletApp_v1_All_except_image
+    [Migration("20231202203037_WalletApp_v1_renamed_sum")]
+    partial class WalletApp_v1_renamed_sum
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace WalletAppTestTask.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("WalletAppTestTask.Models.Bank", b =>
+            modelBuilder.Entity("WalletAppTestTask.DbContext.AccountContext", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -34,17 +34,20 @@ namespace WalletAppTestTask.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("title");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("DueStatus")
+                        .HasColumnType("integer")
+                        .HasColumnName("due_status");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Banks");
+                    b.ToTable("Accounts");
                 });
 
-            modelBuilder.Entity("WalletAppTestTask.Models.BankCard", b =>
+            modelBuilder.Entity("WalletAppTestTask.DbContext.BankCardContext", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -52,6 +55,10 @@ namespace WalletAppTestTask.Migrations
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("AccountId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("id_account");
 
                     b.Property<decimal>("Balance")
                         .HasColumnType("numeric")
@@ -70,20 +77,35 @@ namespace WalletAppTestTask.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("type");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("id_user");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("BankId");
+                    b.HasIndex("AccountId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("BankId");
 
                     b.ToTable("BankCards");
                 });
 
-            modelBuilder.Entity("WalletAppTestTask.Models.Transaction", b =>
+            modelBuilder.Entity("WalletAppTestTask.DbContext.BankContext", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("title");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Banks");
+                });
+
+            modelBuilder.Entity("WalletAppTestTask.DbContext.TransactionContext", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -123,9 +145,9 @@ namespace WalletAppTestTask.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("status");
 
-                    b.Property<decimal>("Sum")
+                    b.Property<decimal>("Total")
                         .HasColumnType("numeric")
-                        .HasColumnName("sum");
+                        .HasColumnName("total");
 
                     b.Property<int>("Type")
                         .HasColumnType("integer")
@@ -138,50 +160,28 @@ namespace WalletAppTestTask.Migrations
                     b.ToTable("Transactions");
                 });
 
-            modelBuilder.Entity("WalletAppTestTask.Models.User", b =>
+            modelBuilder.Entity("WalletAppTestTask.DbContext.BankCardContext", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
+                    b.HasOne("WalletAppTestTask.DbContext.AccountContext", "Account")
+                        .WithMany("BankCards")
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<int>("DueStatus")
-                        .HasColumnType("integer")
-                        .HasColumnName("due_status");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("WalletAppTestTask.Models.BankCard", b =>
-                {
-                    b.HasOne("WalletAppTestTask.Models.Bank", "Bank")
+                    b.HasOne("WalletAppTestTask.DbContext.BankContext", "Bank")
                         .WithMany("Cards")
                         .HasForeignKey("BankId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("WalletAppTestTask.Models.User", "User")
-                        .WithMany("BankCards")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Account");
 
                     b.Navigation("Bank");
-
-                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("WalletAppTestTask.Models.Transaction", b =>
+            modelBuilder.Entity("WalletAppTestTask.DbContext.TransactionContext", b =>
                 {
-                    b.HasOne("WalletAppTestTask.Models.BankCard", "Card")
+                    b.HasOne("WalletAppTestTask.DbContext.BankCardContext", "Card")
                         .WithMany("Transactions")
                         .HasForeignKey("BankCardId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -190,19 +190,19 @@ namespace WalletAppTestTask.Migrations
                     b.Navigation("Card");
                 });
 
-            modelBuilder.Entity("WalletAppTestTask.Models.Bank", b =>
+            modelBuilder.Entity("WalletAppTestTask.DbContext.AccountContext", b =>
                 {
-                    b.Navigation("Cards");
+                    b.Navigation("BankCards");
                 });
 
-            modelBuilder.Entity("WalletAppTestTask.Models.BankCard", b =>
+            modelBuilder.Entity("WalletAppTestTask.DbContext.BankCardContext", b =>
                 {
                     b.Navigation("Transactions");
                 });
 
-            modelBuilder.Entity("WalletAppTestTask.Models.User", b =>
+            modelBuilder.Entity("WalletAppTestTask.DbContext.BankContext", b =>
                 {
-                    b.Navigation("BankCards");
+                    b.Navigation("Cards");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using WalletAppTestTask.Models;
+using WalletAppTestTask.Interfaces;
 
-namespace WalletAppTestTask.Models
+namespace WalletAppTestTask.DbContext
 {
     [Table("Transactions")]
-    public class Transaction
+    public class TransactionContext : IDtoConvertable<TransactionInfoDto>
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -20,10 +22,10 @@ namespace WalletAppTestTask.Models
         [Required]
         public PaymentType Type { get; set; }
 
-        [Column("sum")]
+        [Column("total")]
         [Required]
         [Range(0, 1500)]
-        public decimal Sum { get; set; }
+        public decimal Total { get; set; }
 
         [Column("status")]
         [Required]
@@ -48,19 +50,36 @@ namespace WalletAppTestTask.Models
         [Required]
         public string? Icon { get; set; } //For this version this is just a field without information
 
-        public BankCard Card { get; set; }
+        public BankCardContext Card { get; set; }
 
-    }
+        public TransactionInfoDto ToDto()
+        {
+            return new TransactionInfoDto()
+            {
+                Id = this.Id,
+                BankCardId = this.BankCardId,
+                Type = this.Type,
+                Total = this.Total,
+                Status = this.Status,
+                Name = this.Name,
+                Description = this.Description,
+                AuthorizedUser = this.AuthorizedUser,
+                CreatedAt = this.CreatedAt,
+                Icon = this.Icon
+            };
 
-    public enum PaymentType
-    {
-        Payment = 0,
-        Credit = 1
-    }
+        }
 
-    public enum PaymentStatus
-    {
-        Approved = 0,
-        Declined = 1
+        public enum PaymentType
+        {
+            Payment = 0,
+            Credit = 1
+        }
+
+        public enum PaymentStatus
+        {
+            Approved = 0,
+            Pending = 1
+        }
     }
 }
