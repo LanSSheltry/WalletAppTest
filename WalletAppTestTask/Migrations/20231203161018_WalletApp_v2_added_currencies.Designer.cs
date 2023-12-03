@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WalletAppTestTask.DbContext;
@@ -11,9 +12,11 @@ using WalletAppTestTask.DbContext;
 namespace WalletAppTestTask.Migrations
 {
     [DbContext(typeof(WalletAppDbContext))]
-    partial class WalletAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231203161018_WalletApp_v2_added_currencies")]
+    partial class WalletApp_v2_added_currencies
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

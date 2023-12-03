@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WalletAppTestTask.DbContext;
@@ -11,9 +12,11 @@ using WalletAppTestTask.DbContext;
 namespace WalletAppTestTask.Migrations
 {
     [DbContext(typeof(WalletAppDbContext))]
-    partial class WalletAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231202200145_WalletApp_v1")]
+    partial class WalletApp_v1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,6 +37,10 @@ namespace WalletAppTestTask.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
+
+                    b.Property<int>("DueStatus")
+                        .HasColumnType("integer")
+                        .HasColumnName("due_status");
 
                     b.HasKey("Id");
 
@@ -60,14 +67,6 @@ namespace WalletAppTestTask.Migrations
                     b.Property<long>("BankId")
                         .HasColumnType("bigint")
                         .HasColumnName("id_bank");
-
-                    b.Property<int>("Currency")
-                        .HasColumnType("integer")
-                        .HasColumnName("currency");
-
-                    b.Property<int>("DueStatus")
-                        .HasColumnType("integer")
-                        .HasColumnName("due_status");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -127,10 +126,6 @@ namespace WalletAppTestTask.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("completed_at");
 
-                    b.Property<int>("Currency")
-                        .HasColumnType("integer")
-                        .HasColumnName("currency");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text")
@@ -150,9 +145,9 @@ namespace WalletAppTestTask.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("status");
 
-                    b.Property<decimal>("Total")
+                    b.Property<decimal>("Sum")
                         .HasColumnType("numeric")
-                        .HasColumnName("total");
+                        .HasColumnName("sum");
 
                     b.Property<int>("Type")
                         .HasColumnType("integer")

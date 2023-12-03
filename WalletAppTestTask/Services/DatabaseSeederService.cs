@@ -1,14 +1,20 @@
-﻿using WalletAppTestTask.DbContext;
-using WalletAppTestTask.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using WalletAppTestTask.DbContext;
+using WalletAppTestTask.Interfaces;
+using static WalletAppTestTask.DbContext.TransactionContext;
 
 namespace WalletAppTestTask.Services
 {
 
     //This class generates data for database and fills it
-    public class DatabaseSeeder
+    public class DatabaseSeederService : IDataSeeder
     {
         private readonly WalletAppDbContext _dbContext;
         private readonly Random _random;
+
+        private int _amountOfCardsCntr = 0;
+        private int _amountOfTransactionsCntr = 0;
 
         private List<string> _bankNames = new List<string> {
             "PrivatBank",
@@ -28,7 +34,7 @@ namespace WalletAppTestTask.Services
             "HSBC",
             "Barclays"};
 
-        private readonly List<string> _cardNames = new List<string>() { 
+        private readonly List<string> _cardNames = new List<string>() {
             "Gold",
             "Platinum",
             "Diamond",
@@ -60,21 +66,27 @@ namespace WalletAppTestTask.Services
 
 
 
-        public DatabaseSeeder(WalletAppDbContext dbContext)
+        public DatabaseSeederService(WalletAppDbContext dbContext)
         {
             _dbContext = dbContext;
             _random = new Random();
         }
 
         //Generates data to fill database randomly
-        public string SeedData()
+        public async Task<string> SeedData()
         {
             try
             {
-                SeedBanks();
-                SeedUsers(_amountOfGeneratedUsers);
+                await SeedBanks();
+                await SeedUsers(_amountOfGeneratedUsers);
 
-                return "Database was successfully filled with data";
+                return JsonConvert.SerializeObject(new
+                {
+                    Status = "Successfully generated!",
+                    AmountOfUsers = _amountOfGeneratedUsers,
+                    AmountOfCards = _amountOfCardsCntr,
+                    AmountOfTransactions = _amountOfTransactionsCntr
+                }, Formatting.Indented);
             }
             catch (Exception ex)
             {
@@ -83,17 +95,17 @@ namespace WalletAppTestTask.Services
         }
 
         //Add banks into DB according to list of the names
-        private void SeedBanks()
+        private async Task SeedBanks()
         {
             try
             {
                 foreach (var bkName in _bankNames)
                 {
-                    var bank = new Bank()
+                    var bank = new BankContext()
                     {
                         Title = bkName
                     };
-                    if (_dbContext.Banks.Where(t => t.Title == bank.Title).FirstOrDefault() == null)
+                    if ((await _dbContext.Banks.Where(t => t.Title == bank.Title).FirstOrDefaultAsync()) == null)
                         _dbContext.Banks.Add(bank);
                 }
                 _dbContext.SaveChanges();
@@ -106,40 +118,43 @@ namespace WalletAppTestTask.Services
         }
 
         //Generate and add into database random users
-        private void SeedUsers(int amount)
+        private async Task SeedUsers(int amount)
         {
 
             for (int i = 0; i < amount; i++)
             {
-                var user = new User
+                var user = new AccountContext
                 {
-                    DueStatus = DueStatus.NoPaymentDue,
+                    //DueStatus = DueStatus.NoPaymentDue,
                     CreatedAt = DateTime.UtcNow.AddDays(-_random.Next(1, 1200))
                 };
                 _dbContext.Users.Add(user);
-                _dbContext.SaveChanges();
+                await _dbContext.SaveChangesAsync();
 
 
-                SeedBankCards(user.Id, _random.Next(
+                await SeedBankCards(user.Id, _random.Next(
                     _minAmountOfGeneratedCardsPerUser,
                     _maxAmountOfGeneratedCardsPerUser));
             }
         }
 
         //Generate and add into database bank cards for user
-        private void SeedBankCards(long userId, int amount)
+        private async Task SeedBankCards(long accountId, int amount)
         {
+            _amountOfCardsCntr += amount;
 
             for (int i = 0; i < amount; i++)
             {
-                var rndIdx = _random.Next(0, 8);
+                var rndIdx = _random.Next(0, _bankNames.Count);
 
-                var bankCard = new BankCard
+                var bankCard = new BankCardContext
                 {
-                    UserId = userId,
-                    BankId = _dbContext.Banks
+                    AccountId = accountId,
+                    DueStatus = DueStatus.NoPaymentDue,
+                    BankId = (await _dbContext.Banks
                         .Where(t => t.Title == _bankNames[rndIdx])
-                        .FirstOrDefault().Id,
+                        .FirstOrDefaultAsync()).Id,
+                    Currency = (Currency)_random.Next((int)Currency.UAH, (int)Currency.CAD + 1),
                     Balance = 0,
                     Name = GetRandomCardName(),
                     Type = (int)CardType.Debit
@@ -148,30 +163,37 @@ namespace WalletAppTestTask.Services
                 _dbContext.BankCards.Add(bankCard);
                 _dbContext.SaveChanges();
 
-                SeedTransactions(bankCard.Id, _random.Next(_minTransactionsPerCardAmount, _maxTransactionsPerCardAmount));
+                await SeedTransactions(bankCard.Id, _random.Next(_minTransactionsPerCardAmount, _maxTransactionsPerCardAmount));
             }
         }
 
         //Generate and add into database random transactions (0 < sum(group by bank_cards) < 1500)
-        private void SeedTransactions(long bankCardId, int count)
+        private async Task SeedTransactions(long bankCardId, int count)
         {
+            _amountOfTransactionsCntr += count;
+
             for (int i = 0; i < count; i++)
             {
-                var currentBalance = _dbContext.BankCards
+                var bankCard = await _dbContext.BankCards
                     .Where(t => t.Id == bankCardId)
-                    .FirstOrDefault().Balance;
+                    .FirstOrDefaultAsync();
+
+                var currentBalance = bankCard.Balance;
 
                 var paymentType = (PaymentType)_random.Next(0, 2);
-                var transaction = new Transaction
+                var dayLimit = (await _dbContext.Users.Where(dl => dl.Id == bankCard.AccountId).FirstOrDefaultAsync()).CreatedAt;
+
+                var transaction = new TransactionContext
                 {
                     BankCardId = bankCardId,
                     Type = paymentType,
-                    Sum = CalculateTransactionSum(currentBalance, paymentType),
-                    Status = (int)PaymentStatus.Approved,
+                    Total = CalculateTransactionSum(currentBalance, paymentType),
+                    Currency = bankCard.Currency,
+                    Status = (PaymentStatus)_random.Next(0, 2),
                     Name = GetRandomCompany(),
                     Description = $"Transaction Description #{i}",
                     AuthorizedUser = _random.Next(0, 2) == 0 ? null : $"SomeName #{bankCardId}",
-                    CreatedAt = DateTime.UtcNow.AddDays(_random.Next(1, 1200)),
+                    CreatedAt = dayLimit.AddDays(_random.Next(1, (DateTime.UtcNow - dayLimit).Days)),
                     Icon = "DefaultIcon.jpeg"
                 };
                 _dbContext.Transactions.Add(transaction);
@@ -192,17 +214,17 @@ namespace WalletAppTestTask.Services
         }
 
         //Update Balance according to sum of transactions for current card
-        private void UpdateBalance(Transaction transaction)
+        private void UpdateBalance(TransactionContext transaction)
         {
             var bankCard = _dbContext.BankCards.Find(transaction.BankCardId);
 
             if (transaction.Type == PaymentType.Payment) //Calculates current balance according to paymentType
             {
-                bankCard.Balance = bankCard.Balance + transaction.Sum;
+                bankCard.Balance = bankCard.Balance + transaction.Total;
             }
             else
             {
-                bankCard.Balance = bankCard.Balance - transaction.Sum;
+                bankCard.Balance = bankCard.Balance - transaction.Total;
             }
 
             _dbContext.SaveChanges();

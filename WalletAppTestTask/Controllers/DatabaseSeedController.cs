@@ -5,18 +5,18 @@ namespace WalletAppTestTask.Controllers
 {
     public class DatabaseSeedController : Controller
     {
-        private readonly DatabaseSeeder _dataSeeder;
+        private readonly DatabaseSeederService _dataSeeder;
 
-        public DatabaseSeedController(DatabaseSeeder dataSeeder)
+        public DatabaseSeedController(DatabaseSeederService dataSeeder)
         {
             _dataSeeder = dataSeeder;
         }
 
         //Endpoint to fill database with random information
         [HttpGet("seeddatabase")]
-        public IActionResult SeedTestData()
+        public async Task<IActionResult> SeedTestData()
         {
-            var res = _dataSeeder.SeedData();
+            var res = await _dataSeeder.SeedData();
             return Ok(res);
         }
     }
