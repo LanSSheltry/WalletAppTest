@@ -8,7 +8,6 @@ namespace WalletAppTestTask.Models
 
         public string Title { get; set; }
 
-
         public long GetId()
         {
             return Id;

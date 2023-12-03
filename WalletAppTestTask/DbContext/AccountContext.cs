@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using WalletAppTestTask.Models;
-using System.Runtime.CompilerServices;
 using WalletAppTestTask.Interfaces;
 
 namespace WalletAppTestTask.DbContext

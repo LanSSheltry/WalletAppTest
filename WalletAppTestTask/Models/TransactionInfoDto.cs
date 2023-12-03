@@ -1,6 +1,7 @@
 ﻿using WalletAppTestTask.DbContext;
-using static WalletAppTestTask.DbContext.TransactionContext;
 using WalletAppTestTask.Interfaces;
+
+using static WalletAppTestTask.DbContext.TransactionContext;
 
 namespace WalletAppTestTask.Models
 {
@@ -26,7 +27,7 @@ namespace WalletAppTestTask.Models
 
         public DateTime CreatedAt { get; set; }
 
-        public string Icon { get; set; } //For this version this is just a field without information
+        public string Icon { get; set; }
 
         public long GetId()
         {

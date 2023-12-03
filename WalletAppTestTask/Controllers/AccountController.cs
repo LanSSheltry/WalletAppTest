@@ -17,6 +17,12 @@ namespace WalletAppTestTask.Controllers
             _usersService = usersService;
         }
 
+
+        /*SUMMARY:
+         * This endpoint could fetch all data for current account in the same format with
+         * SQL tables. It allows to check items user has.
+         */ 
+
         [HttpGet("getAllAccountData/{accountId}", Name = "GetAllDataForAccount")]
         public async Task<IActionResult> GetAllDataForAccount(long accountId)
         {
@@ -26,6 +32,12 @@ namespace WalletAppTestTask.Controllers
 
             return Ok(accountJson);
         }
+
+        /*SUMMARY:
+        * This endpoint was created according to the task.
+        * It could fetch data in the TransactionList format using cardId
+        * (After adding accounts "cardId" has the same meaning as "userId" that described in the task)
+        */
 
         [HttpGet("getTransactionList/{cardId}", Name = "Get transaction list")]
         public async Task<IActionResult> GetTransactionListByCardId(long cardId)
@@ -37,10 +49,20 @@ namespace WalletAppTestTask.Controllers
             return Ok(transactionListDto);
         }
 
+        /*SUMMARY:
+        * Current endpoint could fetch all data in the similar format as TransactionList but for several cards.
+        * Also it could convert currencies and display common balance on the all cards.
+        * currency:
+        * 1 - UAH
+        * 2 - EUR
+        * 3 - USD
+        * 4 - CAD
+        */
+
         [HttpGet("getTransactionListForAccount/{accountId}", Name = "Get transaction list for account")]
-        public async Task<IActionResult> GetTransactionListByAccountId(long accountId, Currency outInCurrency = Currency.USD)
+        public async Task<IActionResult> GetTransactionListByAccountId(long accountId, Currency currency = Currency.USD)
         {
-            var transactionList = await _usersService.GetTranactionListByAccountIdAsync(accountId, outInCurrency);
+            var transactionList = await _usersService.GetTranactionListByAccountIdAsync(accountId, currency);
 
             var transactionListDto = JsonConvert.SerializeObject(transactionList, Formatting.Indented);
 

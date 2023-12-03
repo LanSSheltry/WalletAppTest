@@ -17,6 +17,7 @@ namespace WalletAppTestTask.DbContext
 
         public DbSet<BankContext> Banks { get; set; }
 
+        //Setup relations between context entities
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<AccountContext>()
@@ -69,16 +70,16 @@ namespace WalletAppTestTask.DbContext
             return bankName;
         }
 
-        public async Task<List<TransactionContext>> GetTransactionsByCardIdLimitedAsync(long id)
+        public async Task<List<TransactionContext>> GetTransactionsByCardIdLimitedAsync(long cardId)
         {
-            var transactions = await Transactions.Where(tr => tr.BankCardId == id).Take(10).ToListAsync();
+            var transactions = await Transactions.Where(tr => tr.BankCardId == cardId).Take(10).ToListAsync();
 
             return transactions;
         }
 
-        public async Task<List<TransactionContext>> GetTransactionsByCardIdUnlimitedAsync(long id)
+        public async Task<List<TransactionContext>> GetTransactionsByCardIdUnlimitedAsync(long cardId)
         {
-            var transactions = await Transactions.Where(tr => tr.BankCardId == id).ToListAsync();
+            var transactions = await Transactions.Where(tr => tr.BankCardId == cardId).ToListAsync();
 
             return transactions;
         }

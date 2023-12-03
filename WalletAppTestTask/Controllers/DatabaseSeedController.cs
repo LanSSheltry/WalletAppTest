@@ -12,7 +12,11 @@ namespace WalletAppTestTask.Controllers
             _dataSeeder = dataSeeder;
         }
 
-        //Endpoint to fill database with random information
+        /*SUMMARY:
+         * This endpoint was created to simplify the process of filling the database with
+         * simple random data.
+         */
+
         [HttpGet("seeddatabase")]
         public async Task<IActionResult> SeedTestData()
         {

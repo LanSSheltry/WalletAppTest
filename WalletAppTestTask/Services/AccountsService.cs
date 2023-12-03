@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using WalletAppTestTask.DbContext;
+﻿using WalletAppTestTask.DbContext;
 using WalletAppTestTask.Mappers;
 using WalletAppTestTask.Models;
 
@@ -54,19 +52,23 @@ namespace WalletAppTestTask.Services
 
                 var transactions = new List<TransactionInfoDto>();
 
-                foreach (var card in accountInfoDto.BankCards)
+                if (accountInfoDto != null)
                 {
-                    foreach (var transaction in card.Transactions)
+                    foreach (var card in accountInfoDto.BankCards)
                     {
-                        transactions.Add(transaction);
+                        foreach (var transaction in card.Transactions)
+                        {
+                            transactions.Add(transaction);
+                        }
                     }
+
+                    var dtoBuilder = new TransactionListBuilder();
+
+                    var transactionList = dtoBuilder.BuildTransactionListForAccountByAccountId(accountInfoDto, outCurrency);
+
+                    return transactionList;
                 }
-
-                var dtoBuilder = new TransactionListBuilder();
-
-                var transactionList = dtoBuilder.BuildTransactionListForAccountByAccountId(accountInfoDto, outCurrency);
-
-                return transactionList;
+                else return null;
             }
             catch(Exception ex)
             {
@@ -82,21 +84,25 @@ namespace WalletAppTestTask.Services
             {
                 var accountInfo = await _dbContext.GetAccountInfoByIdAsync(accountId);
 
-                accountInfo.BankCards = await _dbContext.GetCardsForUserByIdAsync(accountId);
-
-                foreach (var card in accountInfo.BankCards)
+                if (accountInfo != null)
                 {
-                    await _dbContext.GetTransactionsByCardIdUnlimitedAsync(card.Id);
+                    accountInfo.BankCards = await _dbContext.GetCardsForUserByIdAsync(accountId);
+
+                    foreach (var card in accountInfo.BankCards)
+                    {
+                        await _dbContext.GetTransactionsByCardIdUnlimitedAsync(card.Id);
+                    }
+
+                    var accountInfoDto = accountInfo.ToDto();
+
+                    foreach (var card in accountInfoDto.BankCards)
+                    {
+                        card.BankName = await _dbContext.GetBankNameForCardsByIdAsync(card.BankId);
+                    }
+
+                    return accountInfoDto;
                 }
-
-                var accountInfoDto = accountInfo.ToDto();
-
-                foreach (var card in accountInfoDto.BankCards)
-                {
-                    card.BankName = await _dbContext.GetBankNameForCardsByIdAsync(card.BankId);
-                }
-
-                return accountInfoDto;
+                else return null;
             }
             catch (Exception ex)
             {

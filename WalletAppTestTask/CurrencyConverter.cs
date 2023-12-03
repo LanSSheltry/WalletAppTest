@@ -1,6 +1,4 @@
-﻿
-
-using WalletAppTestTask.DbContext;
+﻿using WalletAppTestTask.DbContext;
 
 namespace WalletAppTestTask
 {
